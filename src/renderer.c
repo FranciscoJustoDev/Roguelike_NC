@@ -1,8 +1,36 @@
 #include "renderer.h"
 
+int drawOptionsWindow(Window win, Player player){
+	
+	int y;
+	int x;
+	for(y = win.pos.y; y < (win.size.y + win.pos.y); y++){
+		for(x = win.pos.x; x < (win.size.x + win.pos.x); x++){
+			if(y == win.pos.y || x == win.pos.x){
+				mvprintw(y, x, "&");
+			}else if(y == (win.pos.y + win.size.y - 1) || x == (win.pos.x + win.size.x - 1)){
+				mvprintw(y, x, "&");
+			}
+		}
+	}
+
+	mvprintw(win.pos.y + 1, win.pos.x, "(|==========================|)");
+	mvprintw(win.pos.y + 2, win.pos.x + 1, "  \"-_                  _-\"  ");
+	mvprintw(win.pos.y + 3, win.pos.x + 1, "   \" -_              _-     ");
+	mvprintw(win.pos.y + 4, win.pos.x + 1, "       -            -\'      ");
+	mvprintw(win.pos.y + 5, win.pos.x + 1, "        -_        _-        ");
+	mvprintw(win.pos.y + 6, win.pos.x + 1, "        \' -_    _-          ");
+	mvprintw(win.pos.y + 7, win.pos.x + 1, "            -__- \"          ");
+	mvprintw(win.pos.y + 8, win.pos.x + 1, "             ''             ");
+
+	mvprintw(win.pos.y + 3, win.pos.x + (win.size.x / 2) - 2, "~HP~");
+	mvprintw(win.pos.y + 4, win.pos.x + (win.size.x / 2) - 1, "%d",player.health);
+
+	return 0;
+}
+
 int drawGameWindow(Map map, Player * player, Window gameWin){
 	
-	clear();
 	Position winCenter;
 	Position mapOffset;
 
@@ -51,6 +79,17 @@ int drawGameWindow(Map map, Player * player, Window gameWin){
 				default:
 					mvprintw(y + gameWin.pos.y, x + gameWin.pos.x, " ");
 					break;
+			}
+		}
+	}
+
+	/* Window Frame */
+	for(y = gameWin.pos.y; y < (gameWin.pos.y + gameWin.size.y); y++){
+		for(x = gameWin.pos.x; x < (gameWin.pos.x + gameWin.size.x); x++){
+			if(y == gameWin.pos.y || x == gameWin.pos.x){
+				mvprintw(y, x, "&");
+			}else if(y == (gameWin.pos.y + gameWin.size.y - 1) || x == (gameWin.pos.x + gameWin.size.x - 1)){
+				mvprintw(y, x, "&");
 			}
 		}
 	}

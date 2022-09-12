@@ -6,22 +6,23 @@ int main(){
 	int ch;
 	Player * player;
 	Window * gameWindow;
+	Window * optionsWindow;
 	Map * map;
 
-	gameWindow = createWindow(2, 4, 15, 15);
+	gameWindow = createWindow(2, 4, 20, 46);
+	optionsWindow = createWindow(2, 55, 20, 30);
 	player = playerSetup();
-	map = create_map(30, 30);
+	map = create_map(100, 100);
 
 	drawGameWindow(*(map), player, *(gameWindow));
-	mvprintw(0, 0, "Player x = %d", player->pos.x);
-	mvprintw(1, 0, "Player y = %d", player->pos.y);
+	drawOptionsWindow(*(optionsWindow), *(player));
 	move(player->scrpos.y, player->scrpos.x);
 
 	while((ch = getch()) != 'q'){
 		handleInput(ch, player);
+		clear();
 		drawGameWindow(*(map), player, *(gameWindow));
-		mvprintw(0, 0, "Player x = %d", player->pos.x);
-		mvprintw(1, 0, "Player y = %d", player->pos.y);
+		drawOptionsWindow(*(optionsWindow), *(player));
 		move(player->scrpos.y, player->scrpos.x);
 	}
 

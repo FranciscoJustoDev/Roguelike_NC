@@ -20,6 +20,9 @@ int handleInput(int input, Player * player){
 		case 'd':
 			playerMovement(input, player);
 			break;
+			
+		case '.':
+			break;
 		
 		default:
 			break;

@@ -3,6 +3,7 @@
 
 #include "engine.h"
 
+int drawOptionsWindow(Window win, Player player);
 int drawGameWindow(Map map, Player * player, Window GameWin);
 int drawPlayer(Window gameWin, Position center, Position playerPos);
 

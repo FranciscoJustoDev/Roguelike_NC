@@ -9,6 +9,12 @@ typedef struct Position{
 	int x;
 } Position;
 
+typedef struct Player{
+	Position pos;
+	Position scrpos;
+	int health;
+} Player;
+
 typedef struct Window{
 	Position pos;
 	Position size;
@@ -26,8 +32,8 @@ int init();
 
 Window * createWindow(int y, int x, int height, int length);
 
+#include "player.h"
 #include "map.h"
 #include "renderer.h"
-#include "player.h"
 
 #endif

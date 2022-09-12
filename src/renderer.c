@@ -1,43 +1,46 @@
 #include "renderer.h"
 
-int drawScreen(Map map, Position playerPos, Window gameWin){
+int drawGameWindow(Map map, Player * player, Window gameWin){
 	
-	Position center;
-	Position offset;
-	Position playerDraw;
-	center.y = gameWin.size.y / 2;
-	center.x = gameWin.size.x / 2;
+	clear();
+	Position winCenter;
+	Position mapOffset;
+
+	/* center == 7 */
+	winCenter.y = gameWin.size.y / 2;
+	winCenter.x = gameWin.size.x / 2;
+
+	/* Find draw_offset for map and player */
+	if(player->pos.y - winCenter.y <= 0){
+		mapOffset.y = 0;
+		player->scrpos.y = player->pos.y + gameWin.pos.y;
+	}else if(player->pos.y + winCenter.y >= (map.size.y - 1)){
+		mapOffset.y = (map.size.y - 1) - (gameWin.size.y - 1);
+		player->scrpos.y = (gameWin.pos.y + (gameWin.size.y - 1)) - ((map.size.y - 1) - player->pos.y);
+	}else{
+		mapOffset.y = player->pos.y - winCenter.y;
+		player->scrpos.y = gameWin.pos.y + winCenter.y;
+	}
+
+	if(player->pos.x - winCenter.x <= 0){
+		mapOffset.x = 0;
+		player->scrpos.x = player->pos.x + gameWin.pos.x;
+	}else if(player->pos.x + winCenter.x >= (map.size.x - 1)){
+		mapOffset.x = (map.size.x - 1) - (gameWin.size.x - 1);
+		player->scrpos.x = (gameWin.pos.x + (gameWin.size.x - 1)) - ((map.size.x - 1) - player->pos.x);
+	}else{
+		mapOffset.x = player->pos.x - winCenter.x;
+		player->scrpos.x = gameWin.pos.x + winCenter.x;
+	}
+
+	/* Draw Game Window */
 	int y;
 	int x;
 
-	/* Lock map if window view escapes map array */
-	if(playerPos.y - center.y < 0 || playerPos.x - center.x < 0){
-		if(playerPos.y - center.y < 0){
-			offset.y = 0;
-		}else{
-			offset.y = playerPos.y - center.y;
-		}
-		if(playerPos.x - center.x < 0){
-			offset.x = 0;
-		}else{
-			offset.x = playerPos.x - center.x;
-		}
-	}else if(playerPos.y + center.y >= map.size.y || playerPos.x + center.x >= map.size.x){
-		if(playerPos.y + center.y >= map.size.y){
-			offset.y = map.size.y - gameWin.size.y;
-		}else{
-			offset.y = playerPos.y - center.y;
-		}
-		if(playerPos.x + center.x >= map.size.x){
-			offset.x = map.size.x - gameWin.size.x;
-		}else{
-			offset.x = playerPos.x - center.x;
-		}
-	}
-
 	for(y = 0; y < gameWin.size.y; y++){
 		for(x = 0; x < gameWin.size.x; x++){
-			switch(map.map[y + offset.y][x + offset.x]){
+			
+			switch(map.map[y + mapOffset.y][x + mapOffset.x]){
 				case 0:
 					mvprintw(y + gameWin.pos.y, x + gameWin.pos.x, ".");
 					break;
@@ -53,32 +56,8 @@ int drawScreen(Map map, Position playerPos, Window gameWin){
 	}
 
 	/* Draw Player */
-	if(offset.y == 0 || offset.x == 0){
-		if(offset.y == 0){
-			playerDraw.y = playerPos.y + gameWin.pos.y;
-		}else{
-			playerDraw.y = gameWin.pos.y + center.y;
-		}
-		if(offset.x == 0){
-			playerDraw.x = playerPos.x + gameWin.pos.x;
-		}else{
-			playerDraw.x = gameWin.pos.x + center.x;
-		}
-	}else if(offset.y == map.size.y - gameWin.size.y || offset.x == map.size.x - gameWin.size.x){
-		if(offset.y == map.size.y - gameWin.size.y){
-			playerDraw.y = (gameWin.pos.y + gameWin.size.y) - (map.size.y - playerPos.y) - 1;
-		}else{
-			playerDraw.y = gameWin.pos.y + center.y;
-		}
-		if(offset.x == map.size.x - gameWin.size.x){
-			playerDraw.x = (gameWin.pos.x + gameWin.size.x) - (map.size.x - playerPos.x) - 1;
-		}else{
-			playerDraw.x = gameWin.pos.x + center.x;
-		}
-	}
-
-	mvprintw(playerDraw.y, playerDraw.x, "@");
-	move(playerDraw.y, playerDraw.x);
+	mvprintw(player->scrpos.y, player->scrpos.x, "@");
+	move(player->scrpos.y, player->scrpos.x);
 
 	return 0;
 }

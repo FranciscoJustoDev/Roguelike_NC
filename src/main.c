@@ -10,12 +10,19 @@ int main(){
 
 	gameWindow = createWindow(2, 4, 15, 15);
 	player = playerSetup();
-	map = create_map(100, 100);
+	map = create_map(30, 30);
 
-	drawScreen(*(map), player->pos, *(gameWindow));
+	drawGameWindow(*(map), player, *(gameWindow));
+	mvprintw(0, 0, "Player x = %d", player->pos.x);
+	mvprintw(1, 0, "Player y = %d", player->pos.y);
+	move(player->scrpos.y, player->scrpos.x);
 
 	while((ch = getch()) != 'q'){
-		drawScreen(*(map), player->pos, *(gameWindow));
+		handleInput(ch, player);
+		drawGameWindow(*(map), player, *(gameWindow));
+		mvprintw(0, 0, "Player x = %d", player->pos.x);
+		mvprintw(1, 0, "Player y = %d", player->pos.y);
+		move(player->scrpos.y, player->scrpos.x);
 	}
 
 	endwin();

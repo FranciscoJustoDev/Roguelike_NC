@@ -3,11 +3,9 @@
 
 #include "engine.h"
 
-typedef struct Player{
-	Position pos;
-	int health;
-} Player;
-
 Player * playerSetup();
+int handleInput(int input, Player * player);
+int playerMovement(int input, Player * player);
+int moveCheck(int y, int x, Player * player, int dir);
 
 #endif

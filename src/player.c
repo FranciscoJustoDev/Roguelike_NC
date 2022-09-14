@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player * playerSetup(){
+Player * createPlayer(){
 	Player * newPlayer;
 	newPlayer = malloc(sizeof(Player));
 

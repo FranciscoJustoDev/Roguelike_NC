@@ -82,7 +82,6 @@ int drawOptionsWindow(Window win, Player player){
 
 int drawGameWindow(Map map, Player * player, Window win){
 
-	Position winCenter;
 	Position offset;
 	Position og;
 	Position mx;
@@ -90,8 +89,6 @@ int drawGameWindow(Map map, Player * player, Window win){
 	Position ctr;
 	int y;
 	int x;
-	winCenter.y = win.size.y / 2;
-	winCenter.x = win.size.x / 2;
 	og.y = win.pos.y;
 	og.x = win.pos.x;
 	mx.y = win.pos.y + win.size.y - 1;
@@ -100,70 +97,96 @@ int drawGameWindow(Map map, Player * player, Window win){
 	sz.x = win.pos.x + win.size.x;
 	ctr.y = win.pos.y + (win.size.y / 2);
 	ctr.x = win.pos.x + (win.size.x / 2);
+	offset = getOffset(win, map, player);
+	drawCamera(offset, win, map, player);
 
-	/* Find map offset and update player screen position */
-	if(player->pos.y - winCenter.y <= 0){
-		offset.y = 0;
-		player->scrpos.y = player->pos.y + og.y;
-	}else if(player->pos.y + winCenter.y >= (map.size.y - 1)){
-		offset.y = (map.size.y - 1) - (win.size.y - 1);
-		player->scrpos.y = mx.y - ((map.size.y - 1) - player->pos.y);
-	}else{
-		offset.y = player->pos.y - winCenter.y;
-		player->scrpos.y = ctr.y;
-	}
-
-	if(player->pos.x - winCenter.x <= 0){
-		offset.x = 0;
-		player->scrpos.x = player->pos.x + og.x;
-	}else if(player->pos.x + winCenter.x >= (map.size.x - 1)){
-		offset.x = (map.size.x - 1) - (win.size.x - 1);
-		player->scrpos.x = mx.x - ((map.size.x - 1) - player->pos.x);
-	}else{
-		offset.x = player->pos.x - winCenter.x;
-		player->scrpos.x = ctr.x;
-	}
-
-	/* Draw Game Window */
-	for(y = 0; y < win.size.y; y++){
-		for(x = 0; x < win.size.x; x++){
-				switch(map.map[y + offset.y][x + offset.x]){
-					case 0:
-						mvprintw(y + og.y, x + og.x, ".");
-						break;
-					case 1:
-						mvprintw(y + og.y, x + og.x, "#");
-						break;
-					
-					default:
-						mvprintw(y + og.y, x + og.x, " ");
-						break;
-				}
-		}
-	}
-
-	/* Window Frame */
-	for(y = og.y - 1; y <= sz.y; y++){
-		for(x = og.x - 1; x <= sz.x; x++){
-			if((y == og.y - 1 && x == og.x - 1) || (y == sz.y && x == sz.x)){
+	for(y = og.y; y < sz.y; y++){
+		for(x = og.x; x < sz.x; x++){
+			/* top left / bottom right */
+			if((y == og.y && x == og.x) || (y == mx.y && x == mx.x)){
 				mvprintw(y, x, "/");
-			}else if((y == og.y - 1 && x == sz.x) || (y == sz.y && x == og.x - 1)){
+			}else if((y == og.y && x == mx.x) || (y == mx.y && x == og.x)){
 				mvprintw(y, x, "\\");
-			}else if((y == og.y - 1 || y == sz.y) && (x > og.x - 1 && x < sz.x)){
+			}else if((y == og.y || y == mx.y) && (x > og.x && x < sz.x)){
 				mvprintw(y, x, "-");
-			}else if((y > og.y - 1 && y < sz.y) && (x == og.x - 1 || x == sz.x)){
+			}else if((y > og.y && y < sz.y) && (x == og.x || x == mx.x)){
 				mvprintw(y, x, "|");
 			}
 		}
 	}
-	mvprintw(og.y - 1, ctr.x, "|");
-	mvprintw(sz.y, ctr.x, "|");
-	mvprintw(ctr.y, sz.x, "-");
-	mvprintw(ctr.y, og.x - 1, "-");
+
+	mvprintw(ctr.y, og.x, "-");
+	mvprintw(ctr.y, mx.x, "-");
+	mvprintw(og.y, ctr.x, "|");
+	mvprintw(mx.y, ctr.x, "|");
+	mvprintw(og.y - 1, og.x + 1, "offset: y %d, x %d", offset);
 
 	/* Draw Player */
 	mvprintw(player->scrpos.y, player->scrpos.x, "@");
 	move(player->scrpos.y, player->scrpos.x);
 
 	return 0;
+}
+
+int drawCamera(Position offset, Window win, Map map, Player * player){
+
+	int y, x;
+	Position cameraPos = {win.pos.y + 1, win.pos.x + 1};
+	Position cameraSize = {win.size.y - 2, win.size.x - 2};
+	Position margin = {(win.size.y / 2) - 1, (win.size.x / 2) - 1};
+
+	for(y = 0; y < cameraSize.y; y++){
+		for(x = 0; x < cameraSize.x; x++){
+			mvprintw(win.pos.y - 1, win.pos.x + 19 + y, "%d", y);
+			switch(map.map[y + offset.y][x + offset.x]){
+				case 0:
+					mvprintw(y + cameraPos.y, x + cameraPos.x, ".");
+					break;
+				case 1:
+					mvprintw(y + cameraPos.y, x + cameraPos.x, "#");
+					break;
+				
+				default:
+					mvprintw(y + cameraPos.y, x + cameraPos.x, " ");
+					break;
+			}
+		}
+	}
+
+	return 0;
+}
+
+Position getOffset(Window win, Map map, Player * player){
+
+	int y, x;
+	Position offset;
+	Position cameraPos = {win.pos.y + 1, win.pos.x + 1};
+	Position cameraSize = {win.size.y - 2, win.size.x - 2};
+	Position margin = {(win.size.y / 2) - 1, (win.size.x / 2) - 1};
+
+	/* Y Axis */
+	if(player->pos.y - margin.y < 0){
+		offset.y = 0;
+		player->scrpos.y = player->pos.y + cameraPos.y;
+	}else if(player->pos.y + margin.y > (map.size.y - 1)){
+		offset.y = map.size.y - cameraSize.y;
+		player->scrpos.y = (cameraPos.y + cameraSize.y) - (map.size.y - player->pos.y);
+	}else{
+		offset.y = player->pos.y - margin.y;
+		player->scrpos.y = cameraPos.y + margin.y;
+	}
+
+	/* X Axis */
+	if(player->pos.x - margin.x < 0){
+		offset.x = 0;
+		player->scrpos.x = player->pos.x + cameraPos.x;
+	}else if(player->pos.x + margin.x > (map.size.x - 1)){
+		offset.x = map.size.x - cameraSize.x;
+		player->scrpos.x = (cameraPos.x + cameraSize.x) - (map.size.x - player->pos.x);
+	}else{
+		offset.x = player->pos.x - margin.x;
+		player->scrpos.x = cameraPos.x + margin.x;
+	}
+
+	return offset;
 }

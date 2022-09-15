@@ -15,9 +15,9 @@ int main(){
 		map edge "free movement"
 		REQUIRE game win size (y,x) to be an ODD int num
 	*/
-	gameWindow = createWindow(8, 6, 13, 45);
+	gameWindow = createWindow(7, 6, 15, 47);
 	optionsWindow = createWindow(2, 55, 20, 30);
-	infoWindow = createWindow(2, 5, 5, 47);
+	infoWindow = createWindow(2, 6, 5, 47);
 
 	map = create_map(50, 50);
 	player = createPlayer();

@@ -6,33 +6,33 @@ int main(){
 	int ch;
 	Player * player;
 	Window * gameWindow;
-	Window * optionsWindow;
+	Window * statsWindow;
 	Window * infoWindow;
-	Map * map;
+	Level * level;
+	Window ** windows;
+	windows = malloc(sizeof(Window) * 3);
 
-	/*
-		Both player screen pos variable and
-		map edge "free movement"
-		REQUIRE game win size (y,x) to be an ODD int num
-	*/
 	gameWindow = createWindow(7, 6, 15, 47);
-	optionsWindow = createWindow(2, 55, 20, 30);
+	statsWindow = createWindow(2, 55, 20, 30);
 	infoWindow = createWindow(2, 6, 5, 47);
+	windows[0] = gameWindow;
+	windows[1] = statsWindow;
+	windows[2] = infoWindow;
 
-	map = create_map(50, 50);
 	player = createPlayer();
+	level = setupLevel("test", &(player->pos));
 
-	drawGameWindow(*(map), player, *(gameWindow));
-	drawOptionsWindow(*(optionsWindow), *(player));
-	drawInfoWindow(*(infoWindow), *(player));
+	drawGameWin(*(gameWindow), *(level), player);
+	drawStatsWin(*(statsWindow), *(player));
+	drawInfoWin(*(infoWindow), *(level));
 	move(player->scrpos.y, player->scrpos.x);
 
 	while((ch = getch()) != 'q'){
-		handleInput(ch, player);
+		handleInput(ch, player, windows, level);
 		clear();
-		drawGameWindow(*(map), player, *(gameWindow));
-		drawOptionsWindow(*(optionsWindow), *(player));
-		drawInfoWindow(*(infoWindow), *(player));
+		drawGameWin(*(gameWindow), *(level), player);
+		drawStatsWin(*(statsWindow), *(player));
+		drawInfoWin(*(infoWindow), *(level));
 		move(player->scrpos.y, player->scrpos.x);
 	}
 

@@ -3,10 +3,11 @@
 
 #include "engine.h"
 
-int drawInfoWindow(Window win, Player player);
-int drawOptionsWindow(Window win, Player player);
-int drawGameWindow(Map map, Player * player, Window GameWin);
-int drawCamera(Position offset, Window win, Map map, Player * player);
-Position getOffset(Window win, Map map, Player * player);
+int drawInfoWin(Window win, Level level);
+int drawStatsWin(Window win, Player player);
+int drawGameWin(Window win, Level level, Player * player);
+int drawCamera(Window win, Level level, Position offset);
+Position getOffset(Window win, Level level, Player * player);
+int drawFrame(Window win);
 
 #endif

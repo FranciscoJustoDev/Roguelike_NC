@@ -3,6 +3,11 @@
 
 #include <ncurses.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define DIR_LEVEL "levels/"
+#define LEVEL_FILE_TYPE ".txt"
 
 typedef struct Position{
 	int y;
@@ -20,10 +25,18 @@ typedef struct Window{
 	Position size;
 } Window;
 
-typedef struct Map{
-    Position size;
-    int ** map;
-} Map;
+typedef struct Level{
+	char * name;
+	int turn;
+    char ** map;
+	Position size;
+} Level;
+
+typedef struct Scene{
+	/*
+		Holds every element of scene.
+	*/
+} Scene;
 
 /**
  * Initialize ncurses.
@@ -31,9 +44,12 @@ typedef struct Map{
 int init();
 
 Window * createWindow(int y, int x, int height, int length);
+Scene * setupScene();
 
+#include "sprites.h"
+#include "input.h"
 #include "player.h"
-#include "map.h"
+#include "level.h"
 #include "renderer.h"
 
 #endif

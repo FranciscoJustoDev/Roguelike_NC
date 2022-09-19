@@ -8,6 +8,14 @@ int init(){
 	return 0;
 }
 
+Scene * setupScene(){
+
+	Scene * newScene;
+	newScene = malloc(sizeof(Scene));
+
+	return newScene;
+}
+
 Window * createWindow(int y, int x, int height, int length){
 	Window * newWindow;
 	newWindow = malloc(sizeof(Window));

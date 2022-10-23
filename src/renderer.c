@@ -1,16 +1,17 @@
 #include "renderer.h"
 
-int drawInfoWin(Window win, Level level){
+int drawStatsWin(Window win, Level level, Player player){
 
 	drawFrame(win);
 
-	mvprintw(win.pos.y + 1, win.pos.x + 1, "%s", level.name);
-	mvprintw(win.pos.y + 2, win.pos.x + 1, "%d", level.turn);
+	mvprintw(win.pos.y + 1, win.pos.x + 1, "HP: %d", player.health);
+	mvprintw(win.pos.y + 2, win.pos.x + 1, "%s", level.name);
+	mvprintw(win.pos.y + 3, win.pos.x + 1, "%d", level.turn);
 
 	return 0;
 }
 
-int drawStatsWin(Window win, Player player){
+int drawLogWin(Window win, Player player, char ** log){
 
 	drawFrame(win);
 
@@ -23,8 +24,7 @@ int drawStatsWin(Window win, Player player){
 	// mvprintw(og.y + 7, og.x + 1, "            -__- \"          ");
 	// mvprintw(og.y + 8, og.x + 1, "             ''             ");
 
-	mvprintw(win.pos.y + 1, win.pos.x + 1, "HP:");
-	mvprintw(win.pos.y + 1, win.pos.x + 5, "%d", player.health);
+	printInfo(log[0], win);
 
 	return 0;
 }

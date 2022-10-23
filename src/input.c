@@ -1,18 +1,17 @@
 #include "input.h"
 
-int handleInput(int input, Player *player, Window **win, Level *level)
-{
+int handleInput(int input, Player *player, Window **wins, Level *level){
 
 	switch (input){
 		case 'w':
 		case 's':
 		case 'a':
 		case 'd':
-			moveAction(getDir(input), player, &(level->turn));
+			moveAction(getDir(input), player, wins, level);
 			break;
 
 		case 'i':
-			inspectMode(player->scrpos, win);
+			inspectMode(player->scrpos, wins[0]);
 			break;
 
 		case '.':
@@ -26,7 +25,9 @@ int handleInput(int input, Player *player, Window **win, Level *level)
 	return 0;
 }
 
-int moveAction(Position dir, Player * player, int *t){
+int moveAction(Position dir, Player * player, Window ** wins, Level * level){
+
+	Position objPos = {player->pos.y + dir.y, player->pos.x + dir.x};
 
 	switch(mvinch(player->scrpos.y + dir.y, player->scrpos.x + dir.x)){
 		case FLOOR:
@@ -34,7 +35,11 @@ int moveAction(Position dir, Player * player, int *t){
 			player->scrpos.x += dir.x;
 			player->pos.y += dir.y;
 			player->pos.x += dir.x;
-			*t += 1;
+			level->turn += 1;
+			break;
+		
+		case DOOR:
+			doorAction(objPos, level, wins[2]);
 			break;
 		
 		default:
@@ -67,7 +72,33 @@ Position getDir(int input){
 	return dir;
 }
 
-int inspectMode(Position playerScr, Window **win){
+int doorAction(Position pos, Level * level, Window * logWin){
+
+	Door * door;
+	char ch;
+	int i, y, x;
+	y = pos.y;
+	x = pos.x;
+
+	for(i = 0; i < level->ndoor; i++){
+		if(y == level->door[i]->pos.y && x == level->door[i]->pos.x){
+			door = level->door[i];
+		}
+	}
+	if(door->locked == 1){
+		updateLog("The door is locked! Smash it down? y/n", level->log);
+		while((ch = getch()) == 'y' && door->hp > 0){
+			door->hp -= 5;
+		}
+	}else{
+		door->open = 1;
+		level->map[y][x] = FLOOR;
+		updateLog("You open the door.", level->log);
+	}
+	return 0;
+}
+
+int inspectMode(Position playerScr, Window * win){
 
 	int ch;
 	char img;
@@ -78,7 +109,7 @@ int inspectMode(Position playerScr, Window **win){
 
 		switch(ch){
 			case 'w':
-				if(pos.y > win[0]->pos.y + 1)
+				if(pos.y > win->pos.y + 1)
 				{
 					img = mvinch(pos.y - 1, pos.x);
 					pos.y--;
@@ -86,7 +117,7 @@ int inspectMode(Position playerScr, Window **win){
 				break;
 
 			case 's':
-				if(pos.y < win[0]->size.y - 2 + win[0]->pos.y)
+				if(pos.y < win->size.y - 2 + win->pos.y)
 				{
 					img = mvinch(pos.y + 1, pos.x);
 					pos.y++;
@@ -94,7 +125,7 @@ int inspectMode(Position playerScr, Window **win){
 				break;
 
 			case 'a':
-				if(pos.x > win[0]->pos.x + 1)
+				if(pos.x > win->pos.x + 1)
 				{
 					img = mvinch(pos.y, pos.x - 1);
 					pos.x--;
@@ -102,7 +133,7 @@ int inspectMode(Position playerScr, Window **win){
 				break;
 
 			case 'd':
-				if(pos.x < win[0]->size.x - 2 + win[0]->pos.x)
+				if(pos.x < win->size.x - 2 + win->pos.x)
 				{
 					img = mvinch(pos.y, pos.x + 1);
 					pos.x++;
@@ -121,53 +152,4 @@ int inspectMode(Position playerScr, Window **win){
 	}while((ch = getch()) != 'q');
 
 	return 0;
-}
-
-int printInfo(char * text, Window win){
-
-	int n, y, x;
-	n = 0;
-	y = 1;
-	x = 1;
-
-	while(n < strlen(text)){
-		
-		mvprintw(win.pos.y + y, win.pos.x + x, "%c", text[n]);
-		
-		if(x < win.size.x - 3){
-			x++;
-		}else{
-			y++;
-			x = 1;
-		}
-		n++;
-	}
-
-	return 0;
-}
-
-char * getInfo(char img){
-
-	switch(img){
-		case PLAYER:
-			return "Handsome!";
-			break;
-
-		case FLOOR:
-			return "This is a floor tile.";
-			break;
-
-		case WALL:
-			return "This is a wall. You'll have to go around.";
-			break;
-
-		case DOOR:
-			return "It's a nice door.";
-			break;
-
-		default:
-			break;
-	}
-
-	return "NOT DEFINED!";
 }

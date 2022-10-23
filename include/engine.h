@@ -25,11 +25,21 @@ typedef struct Window{
 	Position size;
 } Window;
 
+typedef struct Door{
+	Position pos;
+	int hp;
+	int open;
+	int locked;
+} Door;
+
 typedef struct Level{
 	char * name;
 	int turn;
     char ** map;
 	Position size;
+	Door ** door;
+	int ndoor;
+	char ** log;
 } Level;
 
 typedef struct Scene{
@@ -45,6 +55,9 @@ int init();
 
 Window * createWindow(int y, int x, int height, int length);
 Scene * setupScene();
+int updateLog(char * text, char ** log);
+char * getInfo(char img);
+int printInfo(char * text, Window win);
 
 #include "sprites.h"
 #include "input.h"

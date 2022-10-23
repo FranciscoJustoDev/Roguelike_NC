@@ -3,8 +3,8 @@
 
 #include "engine.h"
 
-int drawInfoWin(Window win, Level level);
-int drawStatsWin(Window win, Player player);
+int drawStatsWin(Window win, Level level, Player player);
+int drawLogWin(Window win, Player player, char ** log);
 int drawGameWin(Window win, Level level, Player * player);
 int drawCamera(Window win, Level level, Position offset);
 Position getOffset(Window win, Level level, Player * player);
